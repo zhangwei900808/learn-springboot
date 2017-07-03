@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.sql.DataSource;
+
 @Configuration
 public class MyConfig {
 
@@ -25,5 +27,16 @@ public class MyConfig {
     public ExCacheService exCacheService(){
         ExCacheService exCacheService = new ExCacheService(this.redisCache());
         return exCacheService;
+    }
+
+    //优先application.properties配置，
+    @Bean
+    public DataSource dataSource(){
+        org.apache.tomcat.jdbc.pool.DataSource dataSource = new org.apache.tomcat.jdbc.pool.DataSource();
+        dataSource.setUrl("jdbc:mysql://192.168.10.10:3306/awbeci?characterEncoding=utf-8");
+        dataSource.setUsername("homestead");
+        dataSource.setPassword("secret");
+        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        return dataSource;
     }
 }

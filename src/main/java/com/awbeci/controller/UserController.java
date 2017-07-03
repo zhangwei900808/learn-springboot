@@ -1,34 +1,69 @@
 package com.awbeci.controller;
 
+import com.awbeci.mapper.UserMapper;
+import com.awbeci.model.User;
 import com.awbeci.model.UserInfo;
-import com.awbeci.service.CacheService;
-import com.awbeci.service.ExCacheService;
-import com.awbeci.service.RedisCache;
+import com.sun.xml.internal.ws.api.ha.StickyFeature;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.*;
+
+import java.sql.*;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 public class UserController {
 
     @Autowired
-    CacheService cacheService;
+    JdbcTemplate jdbcTemplate;
 
     @Autowired
-    ExCacheService exCacheService;
-
-    @RequestMapping(value = "/user")
-    public String getUser(){
-//        RedisCache redisCache = new RedisCache("192.168.0.1","8890");
-//        redisCache.setTimeout(70);
-//        ExCacheService exCacheService = new ExCacheService(redisCache);
-
-//        return "Hello SpringBoot"+cacheService.getCache("me");
-        return "this is user and cacheinfo is :"+this.exCacheService.getCache("awbeci");
-    }
+    UserMapper userMapper;
 
     @RequestMapping(value = "/userinfo")
     public UserInfo getUserInfo(){
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection connection = DriverManager.getConnection(
+                    "jdbc:mysql://192.168.10.10:3306/awbeci?characterEncoding=utf-8",
+                    "homestead",
+                    "secret");
+            Statement statement = connection.createStatement();
+            ResultSet rs = statement.executeQuery("SELECT  name from users");
+            while (rs.next()){
+                System.out.print(rs.getString("name"));
+            }
+            connection.close();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return new UserInfo("zhangwei","19");
+    }
+
+    @RequestMapping(value = "/userinfo2")
+    public String getUserInfo2(){
+        List list = jdbcTemplate.queryForList("SELECT  name from users");
+        for (Object obj:list){
+            System.out.print(((Map)obj).get("name"));
+        }
+        return "this is userinfo2";
+    }
+
+    @RequestMapping(value = "/userinfo3/{uid}")
+    public User getUser3(@PathVariable("uid")int id){
+        return userMapper.getUserById(id);
+    }
+
+    @RequestMapping(value = "/userinfo4")
+    public List<User> getUser4(){
+        return userMapper.getAllUsers();
+    }
+
+    @RequestMapping(value = "/userinfo",method = RequestMethod.POST)
+    public int addUser(@RequestBody User user){
+        return userMapper.addUser(user);
     }
 }
