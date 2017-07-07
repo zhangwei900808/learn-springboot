@@ -1,9 +1,8 @@
 package com.awbeci.controller;
 
-import com.awbeci.mapper.UserMapper;
+import com.awbeci.mapper.IUserMapper;
 import com.awbeci.model.User;
 import com.awbeci.model.UserInfo;
-import com.sun.xml.internal.ws.api.ha.StickyFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +18,7 @@ public class UserController {
     JdbcTemplate jdbcTemplate;
 
     @Autowired
-    UserMapper userMapper;
+    IUserMapper userMapper;
 
     @RequestMapping(value = "/userinfo")
     public UserInfo getUserInfo(){
@@ -64,6 +63,15 @@ public class UserController {
 
     @RequestMapping(value = "/userinfo",method = RequestMethod.POST)
     public int addUser(@RequestBody User user){
-        return userMapper.addUser(user);
+//        return userMapper.addUser(user);
+        userMapper.addUser(user);
+        return user.id;
+    }
+
+    @RequestMapping(value = "/adduser",method = RequestMethod.POST)
+    public int testUser(@RequestBody User user){
+//        return userMapper.addUser(user);
+        userMapper.addUser2(user);
+        return user.id;
     }
 }

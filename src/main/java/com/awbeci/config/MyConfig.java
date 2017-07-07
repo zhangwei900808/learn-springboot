@@ -6,6 +6,7 @@ import com.awbeci.service.RedisCache;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import javax.sql.DataSource;
 
@@ -38,5 +39,13 @@ public class MyConfig {
         dataSource.setPassword("secret");
         dataSource.setDriverClassName("com.mysql.jdbc.Driver");
         return dataSource;
+    }
+
+    //设置事务
+    @Bean
+    public DataSourceTransactionManager dataSourceTransactionManager(){
+        DataSourceTransactionManager dataSourceTransactionManager = new DataSourceTransactionManager();
+        dataSourceTransactionManager.setDataSource(this.dataSource());
+        return dataSourceTransactionManager;
     }
 }
