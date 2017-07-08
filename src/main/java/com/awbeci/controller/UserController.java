@@ -3,6 +3,7 @@ package com.awbeci.controller;
 import com.awbeci.mapper.IUserMapper;
 import com.awbeci.model.User;
 import com.awbeci.model.UserInfo;
+import com.awbeci.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,9 @@ public class UserController {
 
     @Autowired
     IUserMapper userMapper;
+
+    @Autowired
+    UserService userService;
 
     @RequestMapping(value = "/userinfo")
     public UserInfo getUserInfo(){
@@ -53,7 +57,8 @@ public class UserController {
 
     @RequestMapping(value = "/userinfo3/{uid}")
     public User getUser3(@PathVariable("uid")int id){
-        return userMapper.getUserById(id);
+        //used aop point cut
+        return userService.getUserInfoById(id);
     }
 
     @RequestMapping(value = "/userinfo4")
